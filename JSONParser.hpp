@@ -39,3 +39,9 @@ class Lexer{
 inline void Lexer::skip_whitespace(){
     while (isspace(peek())) advance();
 }
+inline char Lexer::peek() const{
+    return pos_ < input_.size() ? input_[pos_]: '\0';
+}
+inline char Lexer::advance(){
+    return pos_ < input_.size() ? input_[pos_++]: '\0';
+}

@@ -35,3 +35,7 @@ class Lexer{
     Token number();
     Token literal_error();
 };
+
+inline void Lexer::skip_whitespace(){
+    while (isspace(peek())) advance();
+}

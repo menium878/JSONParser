@@ -79,6 +79,11 @@ inline Token Lexer::string() {
     }
     return {TokenType::STRING, result};
 }
+inline Token Lexer::number() {
+    size_t start = pos_;
+    while (isdigit(peek()) || peek() == '.' || peek() == '-' || peek() == '+') advance();
+    return {TokenType::NUMBER, std::string(input_.substr(start - 1, pos_ - start + 1))};
+}
 inline Token Lexer::next_token()noexcept{
     skip_whitespace();
     char c = advance();

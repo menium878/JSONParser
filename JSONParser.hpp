@@ -23,7 +23,7 @@ struct Token {
 class Lexer{
     public:
         Lexer(std::string_view input) : input_(input), pos_(0) {}
-        void next_token(Token &) noexcept;
+        Token next_token() noexcept;
     private:
         std::string_view input_;
         size_t pos_;
@@ -45,3 +45,27 @@ inline char Lexer::peek() const{
 inline char Lexer::advance(){
     return pos_ < input_.size() ? input_[pos_++]: '\0';
 }
+inline Token Lexer::next_token()noexcept{
+    skip_whitespace();
+    char c = advance();
+
+    switch (c) {
+        case '{': return {TokenType::LEFT_BRACE, "{"};
+        case '}': return {TokenType::RIGHT_BRACE, "}"};
+        case '[': return {TokenType::LEFT_BRACKET, "["};
+        case ']': return {TokenType::RIGHT_BRACKET, "]"};
+        case ':': return {TokenType::COLON, ":"};
+        case ',': return {TokenType::COMMA, ","};
+        case '"': return string();
+        case 't': case 'f': case 'n':
+            --pos_; // Rewind so we can read full word
+            return literal_or_error();
+        default:
+            if (isdigit(c) || c == '-') {
+                --pos_;
+                return number();
+            }
+            return {TokenType::ERROR, std::string(1, c)};
+    }
+}
+

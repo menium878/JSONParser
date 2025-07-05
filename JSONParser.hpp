@@ -21,15 +21,15 @@ struct Token {
 };
 
 class Lexer{
-    public:
-        Lexer(std::string_view input) : input_(input), pos_(0) {}
-        Token next_token() noexcept;
-    private:
-        std::string_view input_;
-        size_t pos_;
+public:
+    Lexer(std::string_view input) : input_(input), pos_(0) {}
+    Token next_token() noexcept;
+private:
+    std::string_view input_;
+    size_t pos_;
 
-        char peek() const;
-        char advance();
+    char peek() const;
+    char advance();
     void skip_whitespace();
     Token string();
     Token number();

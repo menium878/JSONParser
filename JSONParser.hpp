@@ -33,7 +33,7 @@ class Lexer{
     void skip_whitespace();
     Token string();
     Token number();
-    Token literal_error();
+    Token literal_or_error();
 };
 
 inline void Lexer::skip_whitespace(){
@@ -44,6 +44,21 @@ inline char Lexer::peek() const{
 }
 inline char Lexer::advance(){
     return pos_ < input_.size() ? input_[pos_++]: '\0';
+}
+inline Token Lexer::literal_or_error() {
+    if (input_.substr(pos_, 4) == "true") {
+        pos_ += 4;
+        return {TokenType::TRUE, "true"};
+    }
+    if (input_.substr(pos_, 5) == "false") {
+        pos_ += 5;
+        return {TokenType::FALSE, "false"};
+    }
+    if (input_.substr(pos_, 4) == "null") {
+        pos_ += 4;
+        return {TokenType::NULL_VALUE, "null"};
+    }
+    return {TokenType::ERROR, ""};
 }
 inline Token Lexer::next_token()noexcept{
     skip_whitespace();

@@ -70,7 +70,6 @@ inline Token Lexer::string() {
             switch (esc) {
                 case '"': result += '"'; break;
                 case 'n': result += '\n'; break;
-                // Handle other escapes
                 default: result += esc;
             }
         } else {

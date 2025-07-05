@@ -60,6 +60,25 @@ inline Token Lexer::literal_or_error() {
     }
     return {TokenType::ERROR, ""};
 }
+inline Token Lexer::string() {
+    std::string result;
+    while (true) {
+        char c = advance();
+        if (c == '"') break;
+        if (c == '\\') {
+            char esc = advance();
+            switch (esc) {
+                case '"': result += '"'; break;
+                case 'n': result += '\n'; break;
+                // Handle other escapes
+                default: result += esc;
+            }
+        } else {
+            result += c;
+        }
+    }
+    return {TokenType::STRING, result};
+}
 inline Token Lexer::next_token()noexcept{
     skip_whitespace();
     char c = advance();

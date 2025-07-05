@@ -1,4 +1,5 @@
 #include <string>
+#include <iostream>
 #include <string_view>
 #include <variant>
 enum class TokenType {
@@ -85,6 +86,10 @@ inline Token Lexer::number() {
 }
 inline Token Lexer::next_token()noexcept{
     skip_whitespace();
+    if (pos_ >= input_.size()) {
+    return {TokenType::END_OF_INPUT, {}};
+}
+
     char c = advance();
 
     switch (c) {
@@ -105,5 +110,44 @@ inline Token Lexer::next_token()noexcept{
             }
             return {TokenType::ERROR, std::string(1, c)};
     }
+}
+
+inline std::string token_type_to_string(TokenType type) {
+    switch (type) {
+        case TokenType::LEFT_BRACE: return "LEFT_BRACE";
+        case TokenType::RIGHT_BRACE: return "RIGHT_BRACE";
+        case TokenType::LEFT_BRACKET: return "LEFT_BRACKET";
+        case TokenType::RIGHT_BRACKET: return "RIGHT_BRACKET";
+        case TokenType::COLON: return "COLON";
+        case TokenType::COMMA: return "COMMA";
+        case TokenType::STRING: return "STRING";
+        case TokenType::NUMBER: return "NUMBER";
+        case TokenType::TRUE: return "TRUE";
+        case TokenType::FALSE: return "FALSE";
+        case TokenType::NULL_VALUE: return "NULL";
+        case TokenType::END_OF_INPUT: return "END_OF_INPUT";
+        case TokenType::ERROR: return "ERROR";
+        default: return "UNKNOWN";
+    }
+}
+
+inline void print_token(const Token& token) {
+    std::cout << token_type_to_string(token.type) << ": ";
+
+    std::visit([](auto&& val) {
+        using T = std::decay_t<decltype(val)>;
+        if constexpr (std::is_same_v<T, std::string>)
+            std::cout << val;
+        else if constexpr (std::is_same_v<T, double>)
+            std::cout << val;
+        else if constexpr (std::is_same_v<T, bool>)
+            std::cout << (val ? "true" : "false");
+        else if constexpr (std::is_same_v<T, std::nullptr_t>)
+            std::cout << "null";
+        else
+            std::cout << "none";
+    }, token.text);
+
+    std::cout << "\n";
 }
 
